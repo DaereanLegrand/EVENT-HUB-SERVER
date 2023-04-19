@@ -1,3 +1,6 @@
 # Integrantes
-- Frank Roger Salas Ticona
 - Mauricio Nicolas Colque Morales
+- Emmanuel...
+- Marco...
+- Justo Alfredo Perez Choque
+- Frank Roger Salas Ticona
