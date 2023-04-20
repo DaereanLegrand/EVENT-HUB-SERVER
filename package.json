@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/DaereanLegrand/EVENT-HUB-SERVER/issues"
   },
-  "homepage": "https://github.com/DaereanLegrand/EVENT-HUB-SERVER#readme"
+  "homepage": "https://github.com/DaereanLegrand/EVENT-HUB-SERVER#readme",
+  "dependencies": {
+    "pg": "^8.10.0"
+  }
 }
