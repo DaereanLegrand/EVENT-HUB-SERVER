@@ -24,9 +24,49 @@ function revisarCredenciales(response, usuario, contraseña) {
         var rows = JSON.stringify(payload.rows);
         console.log(rows);
         response.setHeader("Content-type", "application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
         response.writeHead(200);
         response.end(rows);
     })
+}
+
+function registrarCredenciales(response, usuario, contraseña) {
+    const query = `INSERT INTO credentials (username, password) VALUES ('${usuario}', '${contraseña}')`;
+    console.log(query);
+
+    client.query(query).then((res) => {
+        var payload = res || new Object();
+        var rows = JSON.stringify(payload.rows);
+        console.log(rows);
+        return true;
+    })
+    return false;
+}
+
+function registrarPersona(response, params) {
+    const query = `INSERT INTO personas (nombres, mail, tipo_doc, doc) VALUES ('${params.nombres} ${params.apellidos}', '${params.mail}', ${params.tipo}, ${params.documento})`;
+    console.log(query);
+
+    let creden = registrarCredenciales(response, params.usuario, params.contraseña);
+
+     client.query(query).then((res) => {
+        var payload = res || new Object();
+        var rows = JSON.stringify(payload.rows);
+        if (creden == true && rows.length == 0) {
+            rows = JSON.stringify({
+                success: true
+            })
+        }
+        console.log(rows);
+        response.setHeader("Content-type", "application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.writeHead(200);
+        response.end(rows);
+    })
+}
+
+function adaptarEvento(response, params) {
+
 }
 
 const server = http.createServer((request, response) => {
@@ -42,6 +82,27 @@ const server = http.createServer((request, response) => {
                 revisarCredenciales(response, params.usuario, params.contraseña)
             })
             break;
+        case "/register":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                console.log(params);
+                registrarPersona(response, params);
+            })
+            break;
+        case "/AdaptarEvento":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                console.log(params);
+                adaptarEvento(response, params);
+            })
     }
 });
 
