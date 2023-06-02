@@ -60,6 +60,7 @@ function registrarPersona(response, params) {
   let creden =
       registrarCredenciales(response, params.usuario, params.contraseña);
 
+<<<<<<< HEAD
   client.query(query).then((res) => {
     var payload = res || new Object();
     var rows = JSON.stringify(payload.rows);
@@ -72,6 +73,22 @@ function registrarPersona(response, params) {
     response.writeHead(200);
     response.end(rows);
   })
+=======
+    client.query(query).then((res) => {
+        var payload = res || new Object();
+        var rows = JSON.stringify(payload.rows);
+        if (creden == true && rows.length == 0) {
+            rows = JSON.stringify({
+                success: true
+            })
+        }
+        console.log(rows);
+        response.setHeader("Content-type", "application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.writeHead(200);
+        response.end(rows);
+    })
+>>>>>>> abc4ba5f3edd9661513cf992b44659cd08839d08
 }
 
 function adaptarEvento(response, params) {}
@@ -120,7 +137,23 @@ function crearAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo,
       });
 }
 
+function seleccionarComites(response) {
+    const query = `SELECT * FROM comites`;
+    console.log(query);
+
+    client.query(query).then((res) => {
+        var payload = res || new Object();     
+        var rows = JSON.stringify(payload.rows);
+        console.log(rows);
+        response.setHeader("Content-type", "application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.writeHead(200);
+        response.end(rows);
+    })
+}
+
 const server = http.createServer((request, response) => {
+<<<<<<< HEAD
   switch (request.url) {
   case "/login":
     var body = "";
@@ -168,6 +201,53 @@ const server = http.createServer((request, response) => {
                     params.tamaño, params.tipo, params.descripcion);
     })
   }
+=======
+    switch(request.url) {
+        case "/login":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                console.log(params);
+                revisarCredenciales(response, params.usuario, params.contraseña)
+            })
+            break;
+        case "/register":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                console.log(params);
+                registrarPersona(response, params);
+            })
+            break;
+        case "/AdaptarEvento":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                console.log(params);
+                adaptarEvento(response, params);
+            })
+            break;
+        case "/SeleccionarComites":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                seleccionarComites(response);
+            })
+            break;
+
+    }
+>>>>>>> abc4ba5f3edd9661513cf992b44659cd08839d08
 });
 
 server.listen(
