@@ -5,13 +5,17 @@ const {Client} = require("pg");
 const hostname = "0.0.0.0";
 const port = "8080";
 
+/*
 const client = new Client({
-  user : "marco",
+  user : "daerean",
   host : "localhost",
-  password : "aguantaa123",
+  password : "",
   database : "event-hub-db",
   port : 5432,
 })
+*/
+
+const {client} = require("./loginsql.js");
 
 client.connect()
     .then(() => {
