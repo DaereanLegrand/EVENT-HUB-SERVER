@@ -6,9 +6,9 @@ const hostname = "0.0.0.0";
 const port = "8080";
 
 const client = new Client({
-  user : "marco",
+  user : "just_",
   host : "localhost",
-  password : "aguantaa123",
+  password : "yuca123",
   database : "event-hub-db",
   port : 5432,
 })
@@ -137,6 +137,51 @@ function seleccionarComites(response) {
     })
 }
 
+function NombresAmbientes(response) {
+  const query = "SELECT nombre FROM ambientes";
+  console.log(query);
+
+  client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      console.log(rows);
+      response.setHeader("Content-type", "application/json");
+      response.setHeader("Access-Control-Allow-Origin", "*");
+      response.writeHead(200);
+      response.end(rows);
+    })
+    .catch((error) => {
+      console.error("Error al obtener los ambientes:", error);
+      response.writeHead(500);
+      response.end(JSON.stringify({ error: "Error al obtener los ambientes" }));
+    });
+}
+
+function NombresEventos(response) {
+    const query = "SELECT nombre FROM eventos";
+    console.log(query);
+  
+    client
+      .query(query)
+      .then((res) => {
+        var payload = res || new Object();
+        var rows = JSON.stringify(payload.rows);
+        console.log(rows);
+        response.setHeader("Content-type", "application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.writeHead(200);
+        response.end(rows);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los eventos:", error);
+        response.writeHead(500);
+        response.end(JSON.stringify({ error: "Error al obtener los eventos" }));
+      });
+  }
+
+
 const server = http.createServer((request, response) => {
   switch (request.url) {
   case "/login":
@@ -194,6 +239,14 @@ const server = http.createServer((request, response) => {
                 seleccionarComites(response);
             })
             break;
+    case "/seleccionarAmbientes":
+
+      NombresAmbientes(response);
+      break;      
+    case "/eventosEnProgreso":
+        
+        NombresEventos(response);
+        break;
   }
 });
 
