@@ -49,7 +49,7 @@ function registrarPersona(response, params) {
 
     let creden = registrarCredenciales(response, params.usuario, params.contraseña);
 
-     client.query(query).then((res) => {
+    client.query(query).then((res) => {
         var payload = res || new Object();
         var rows = JSON.stringify(payload.rows);
         if (creden == true && rows.length == 0) {
@@ -67,6 +67,21 @@ function registrarPersona(response, params) {
 
 function adaptarEvento(response, params) {
 
+}
+
+function seleccionarComites(response) {
+    const query = `SELECT * FROM comites`;
+    console.log(query);
+
+    client.query(query).then((res) => {
+        var payload = res || new Object();     
+        var rows = JSON.stringify(payload.rows);
+        console.log(rows);
+        response.setHeader("Content-type", "application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.writeHead(200);
+        response.end(rows);
+    })
 }
 
 const server = http.createServer((request, response) => {
@@ -103,6 +118,17 @@ const server = http.createServer((request, response) => {
                 console.log(params);
                 adaptarEvento(response, params);
             })
+            break;
+        case "/SeleccionarComites":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                seleccionarComites(response);
+            })
+            break;
+
     }
 });
 
