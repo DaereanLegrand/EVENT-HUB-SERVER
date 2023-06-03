@@ -95,7 +95,7 @@ function crearEvento(
     endtime,
     descripcion
 ) {
-    const query = `INSERT INTO eventos (nombre,lugar, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${nombre}','${lugar}', '${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}')`;
+    const query = `INSERT INTO eventos (nombre,lugar, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${nombre}','${lugar}', '${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}') RETURNING id_evento`;
     return client
         .query(query)
         .then((res) => {
