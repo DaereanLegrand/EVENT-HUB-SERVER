@@ -404,6 +404,49 @@ const server = http.createServer((request, response) => {
                 );
             });
             break;
+
+            case "/editarEvento":
+                var body = "";
+                request.on("data", function (chunk) {
+                  body += chunk;
+                });
+                request.on("end", function () {
+                  let params = JSON.parse(body);
+                  console.log(params);
+                  editarEvento(
+                    response,
+                    params.nombre,
+                    params.lugar,
+                    params.categoria,
+                    params.startdate,
+                    params.enddate,
+                    params.starttime,
+                    params.endtime,
+                    params.descripcion
+                  );
+                });
+                break;
+                
+            case "/editarAmbiente":
+              var body = "";
+              request.on("data", function (chunk) {
+                body += chunk;
+              });
+              request.on("end", function () {
+              let params = JSON.parse(body);
+              console.log(params);
+                editarAmbiente(
+                response,
+                params.nombre,
+                params.ubicacion,
+                params.aforo,
+                params.tamaño,
+                params.tipo,
+                params.descripcion
+                );
+            });
+            break;
+
         case "/SeleccionarComites":
             var body = "";
             request.on("data", function (chunk) {
