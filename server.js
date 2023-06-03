@@ -126,6 +126,54 @@ function crearAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo,
       });
 }
 
+
+function editarEvento(response, nombre, lugar, categoria, startdate, enddate, starttime, endtime, descripcion) {
+  const query = `
+    UPDATE eventos
+    SET lugar='${lugar}', categoria='${categoria}', fcomienzo='${startdate}', ffin='${enddate}', hcomienzo='${starttime}', hfin='${endtime}', descripcion='${descripcion}'
+    WHERE nombre='${nombre}'
+  `;
+  console.log(query);
+
+  return client.query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      console.log("El evento se ha actualizado correctamente en la tabla.");
+      console.log(rows);
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error al actualizar el evento:", error);
+      return false;
+    });
+}
+
+
+function actualizarAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo, descripcion) {
+  const query = `
+    UPDATE ambientes
+    SET ubicacion='${ubicacion}', aforo=${aforo}, tamaño='${tamaño}', tipo='${tipo}', descripcion='${descripcion}'
+    WHERE nombre='${nombre}'
+  `;
+  console.log(query);
+
+  return client.query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      console.log("El ambiente se ha actualizado correctamente en la tabla.");
+      console.log(rows);
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error al actualizar el ambiente:", error);
+      return false;
+    });
+}
+
+
+
 function seleccionarComites(response) {
     const query = `SELECT * FROM comites`;
     console.log(query);
