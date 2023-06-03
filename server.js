@@ -229,25 +229,31 @@ function NombresAmbientes(response) {
 }
 
 function NombresEventos(response) {
-  const query = "SELECT nombre FROM eventos";
+  const query = "SELECT * FROM eventos";
   //console.log(query);
 
   client
-    .query(query)
-    .then((res) => {
-      var payload = res || new Object();
-      var rows = JSON.stringify(payload.rows);
-      console.log(rows);
-      response.setHeader("Content-type", "application/json");
-      response.setHeader("Access-Control-Allow-Origin", "*");
-      response.writeHead(200);
-      response.end(rows);
-    })
-    .catch((error) => {
-      console.error("Error al obtener los eventos:", error);
-      response.writeHead(500);
-      response.end(JSON.stringify({ error: "Error al obtener los eventos" }));
-    });
+  .query(query)
+  .then((res) => {
+    var payload = res || new Object();
+    var rows = JSON.stringify(payload.rows);
+    response.setHeader(
+      "Access-Control-Allow-Origin",
+      "http://localhost:3000"
+    );
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.writeHead(200);
+    response.end(rows);
+  })
+  .catch((error) => {
+    console.error("Error al obtener los ambientes:", error);
+    response.writeHead(500);
+    response.end(JSON.stringify({ error: "Error al obtener los eventos" }));
+  });
 }
 
 const server = http.createServer((request, response) => {
