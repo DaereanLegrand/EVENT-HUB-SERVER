@@ -1,6 +1,6 @@
-const http = require('http');
+const http = require("http");
 const fs = require("fs").promises;
-const {Client} = require("pg");
+const { Client } = require("pg");
 
 const hostname = "0.0.0.0";
 const port = "8080";
@@ -15,19 +15,19 @@ const client = new Client({
 })
 */
 
-const {client} = require("./loginsql.js");
+const { client } = require("./loginsql.js");
 
-client.connect()
-    .then(() => {
-      console.log("Conexion exitosa a la base de datos PostgreSQL");
-    })
-    .catch((error) => {
-      console.error("Error al conectar a la base de datos PostgreSQL:", error);
-    });
+client
+  .connect()
+  .then(() => {
+    console.log("Conexion exitosa a la base de datos PostgreSQL");
+  })
+  .catch((error) => {
+    console.error("Error al conectar a la base de datos PostgreSQL:", error);
+  });
 
 function revisarCredenciales(response, usuario, contraseña) {
-  const query = `SELECT COUNT(*) FROM credentials WHERE username = '${
-      usuario}' and password = '${contraseña}'`;
+  const query = `SELECT COUNT(*) FROM credentials WHERE username = '${usuario}' and password = '${contraseña}'`;
   console.log(query);
 
   client.query(query).then((res) => {
@@ -38,12 +38,11 @@ function revisarCredenciales(response, usuario, contraseña) {
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.writeHead(200);
     response.end(rows);
-  })
+  });
 }
 
 function registrarCredenciales(response, usuario, contraseña) {
-  const query = `INSERT INTO credentials (username, password) VALUES ('${
-      usuario}', '${contraseña}')`;
+  const query = `INSERT INTO credentials (username, password) VALUES ('${usuario}', '${contraseña}')`;
   console.log(query);
 
   client.query(query).then((res) => {
@@ -51,77 +50,104 @@ function registrarCredenciales(response, usuario, contraseña) {
     var rows = JSON.stringify(payload.rows);
     console.log(rows);
     return true;
-  })
+  });
   return false;
 }
 
 function registrarPersona(response, params) {
-  const query = `INSERT INTO personas (nombres, mail, tipo_doc, doc) VALUES ('${
-      params.nombres} ${params.apellidos}', '${params.mail}', ${params.tipo}, ${
-      params.documento})`;
+  const query = `INSERT INTO personas (nombres, mail, tipo_doc, doc) VALUES ('${params.nombres} ${params.apellidos}', '${params.mail}', ${params.tipo}, ${params.documento})`;
   console.log(query);
 
-  let creden =
-      registrarCredenciales(response, params.usuario, params.contraseña);
+  let creden = registrarCredenciales(
+    response,
+    params.usuario,
+    params.contraseña
+  );
 
   client.query(query).then((res) => {
     var payload = res || new Object();
     var rows = JSON.stringify(payload.rows);
     if (creden == true && rows.length == 0) {
+<<<<<<< HEAD
       rows = JSON.stringify({success : true})
+=======
+      rows = JSON.stringify({
+        success: true,
+      });
+>>>>>>> 08ecb63a27a64e767be620d839c4443c822575cb
     }
     console.log(rows);
     response.setHeader("Content-type", "application/json");
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.writeHead(200);
     response.end(rows);
+<<<<<<< HEAD
   })
+=======
+  });
+>>>>>>> 08ecb63a27a64e767be620d839c4443c822575cb
 }
 
 function adaptarEvento(response, params) {}
 
+<<<<<<< HEAD
 function crearEvento(response, nombre, lugar, startdate, enddate, starttime,
                      endtime, descripcion) {
   const query =
       `INSERT INTO eventos (nombre,lugar, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${
           nombre}','${lugar}', '${startdate}','${enddate}', '${starttime}', '${
           endtime}', '${descripcion}')`;
+=======
+function crearEvento(
+  response,
+  nombre,
+  lugar,
+  categoria,
+  startdate,
+  enddate,
+  starttime,
+  endtime,
+  descripcion
+) {
+  const query = `INSERT INTO eventos (nombre,lugar,categoria, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${nombre}','${lugar}', '${categoria}', '${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}')`;
+>>>>>>> 08ecb63a27a64e767be620d839c4443c822575cb
   console.log(query);
 
-  return client.query(query)
-      .then((res) => {
-        var payload = res || new Object();
-        var rows = JSON.stringify(payload.rows);
-        console.log("El evento se ha insertado correctamente en la tabla.");
-        console.log(rows);
-        return true;
-      })
-      .catch((error) => {
-        console.error("Error al insertar un evento:", error);
-        return false;
-      });
+  return client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      console.log("El evento se ha insertado correctamente en la tabla.");
+      console.log(rows);
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error al insertar un evento:", error);
+      return false;
+    });
 }
 
-function crearAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo,
-                       descripcion) {
-  const query =
-      `INSERT INTO eventos (nombre, categoria, lugar, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${
-          nombre}','${lugar}', '${direccion}', '${startdate}','${enddate}', '${
-          starttime}', '${endtime}', '${descripcion}')`;
+function crearAmbiente(
+  response,
+  params
+) {
+    const query = `INSERT INTO ambientes (nombre, ubicacion, aforo, tipo, tamaño, descripcion) VALUES ('${params.nombre}', '${params.ubicacion}', ${params.aforo}, '${params.tipo}', ${params.tamaño}, '${params.descripcion}')`;
   console.log(query);
 
-  return client.query(query)
-      .then((res) => {
-        var payload = res || new Object();
-        var rows = JSON.stringify(payload.rows);
-        console.log("El ambiente se ha insertado correctamente en la tabla.");
-        console.log(rows);
-        return true;
-      })
-      .catch((error) => {
-        console.error("Error al insertar un ambiente:", error);
-        return false;
-      });
+  return client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      console.log("El ambiente se ha insertado correctamente en la tabla.");
+      console.log(rows);
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error al insertar un ambiente:", error);
+      return false;
+    });
 }
 
 function editarEvento(response, nombre, lugar, categoria, startdate, enddate,
@@ -149,8 +175,13 @@ function editarEvento(response, nombre, lugar, categoria, startdate, enddate,
       });
 }
 
+<<<<<<< HEAD
 function actualizarAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo,
                             descripcion) {
+=======
+
+function editarAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo, descripcion) {
+>>>>>>> 08ecb63a27a64e767be620d839c4443c822575cb
   const query = `
     UPDATE ambientes
     SET ubicacion='${ubicacion}', aforo=${aforo}, tamaño='${tamaño}', tipo='${
@@ -173,6 +204,38 @@ function actualizarAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo,
       });
 }
 
+<<<<<<< HEAD
+=======
+function crearActividad(
+  response,
+  id_evento,
+  nombre,
+  startdate,
+  enddate,
+  starttime,
+  endtime,
+  descripcion,
+  expositor
+){
+  const query = `INSERT INTO actividades (id_evento, nombre, fcomienzo, ffin, hcomienzo, hfin, descripcion, expositores) VALUES ('${id_evento}', '${nombre}','${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}'), 'ARRAY[${expositor}])`;
+  console.log(query);
+
+  return client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      console.log("La actividad se ha insertado correctamente en la tabla.");
+      console.log(rows);
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error al insertar una actividad:", error);
+      return false;
+    });
+}
+
+>>>>>>> 08ecb63a27a64e767be620d839c4443c822575cb
 function seleccionarComites(response) {
   const query = `SELECT * FROM comites`;
   console.log(query);
@@ -185,11 +248,71 @@ function seleccionarComites(response) {
     response.setHeader("Access-Control-Allow-Origin", "*");
     response.writeHead(200);
     response.end(rows);
+<<<<<<< HEAD
   })
+=======
+  });
+}
+
+function NombresAmbientes(response) {
+  const query = "SELECT * FROM ambientes";
+
+  client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      response.setHeader(
+        "Access-Control-Allow-Origin",
+        "http://localhost:3000"
+      );
+      response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+      response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+      response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
+      response.setHeader("Access-Control-Allow-Origin", "*");
+      response.writeHead(200);
+      response.end(rows);
+    })
+    .catch((error) => {
+      console.error("Error al obtener los ambientes:", error);
+      response.writeHead(500);
+      response.end(JSON.stringify({ error: "Error al obtener los ambientes" }));
+    });
+}
+
+function NombresEventos(response) {
+  const query = "SELECT * FROM eventos";
+  //console.log(query);
+
+  client
+  .query(query)
+  .then((res) => {
+    var payload = res || new Object();
+    var rows = JSON.stringify(payload.rows);
+    response.setHeader(
+      "Access-Control-Allow-Origin",
+      "http://localhost:3000"
+    );
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.writeHead(200);
+    response.end(rows);
+  })
+  .catch((error) => {
+    console.error("Error al obtener los ambientes:", error);
+    response.writeHead(500);
+    response.end(JSON.stringify({ error: "Error al obtener los eventos" }));
+  });
+>>>>>>> 08ecb63a27a64e767be620d839c4443c822575cb
 }
 
 const server = http.createServer((request, response) => {
   switch (request.url) {
+<<<<<<< HEAD
   case "/login":
     var body = "";
     request.on("data", function(chunk) { body += chunk; });
@@ -242,9 +365,156 @@ const server = http.createServer((request, response) => {
     request.on("data", function(chunk) { body += chunk; });
     request.on("end", function() { seleccionarComites(response); })
     break;
+=======
+    case "/login":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        revisarCredenciales(response, params.usuario, params.contraseña);
+      });
+      break;
+    case "/register":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        registrarPersona(response, params);
+      });
+      break;
+    case "/AdaptarEvento":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        adaptarEvento(response, params);
+      });
+    case "/crearEvento":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        crearEvento(
+          response,
+          params.nombre,
+          params.lugar,
+          params.categoria,
+          params.startdate,
+          params.enddate,
+          params.starttime,
+          params.endtime,
+          params.descripcion
+        );
+      });
+    case "/crearAmbiente":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        crearAmbiente(
+          response,
+          params
+        );
+      });
+      break;
+      
+    case "/editarEvento":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        editarEvento(
+          response,
+          params.nombre,
+          params.lugar,
+          params.categoria,
+          params.startdate,
+          params.enddate,
+          params.starttime,
+          params.endtime,
+          params.descripcion
+        );
+      });
+      break;
+      
+    case "/editarAmbiente":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        editarAmbiente(
+          response,
+          params.nombre,
+          params.ubicacion,
+          params.aforo,
+          params.tamaño,
+          params.tipo,
+          params.descripcion
+        );
+      });
+      break;
+    case "/Actividades":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        crearActividad(
+          response,
+          params.id_evento,
+          params.nombre,
+          params.startdate,
+          params.enddate,
+          params.starttime,
+          params.endtime,
+          params.descripcion,
+          params.expositor
+        );
+      });
+      break;
+
+    case "/SeleccionarComites":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        seleccionarComites(response);
+      });
+      break;
+    case "/seleccionarAmbientes":
+      NombresAmbientes(response);
+      break;
+    case "/eventosEnProgreso":
+      NombresEventos(response);
+      break;
+>>>>>>> 08ecb63a27a64e767be620d839c4443c822575cb
   }
 });
 
-server.listen(
-    port, hostname,
-    () => { console.log(`Server running at http://${hostname}:${port}/`); });
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
