@@ -83,21 +83,19 @@ function registrarPersona(response, params) {
     });
 }
 
+function adaptarEvento(response, params) {}
+
 function crearEvento(
     response,
     nombre,
     lugar,
-    categoria,
     startdate,
     enddate,
     starttime,
     endtime,
     descripcion
 ) {
-    // const query = `INSERT INTO eventos (nombre,lugar,categoria, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${nombre}','${lugar}', '${categoria}', '${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}')`;
-    const query = `INSERT INTO eventos (nombre,lugar,categoria, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${nombre}','${lugar}', '${categoria}', '${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}') RETURNING id_evento`;
-    console.log(query);
-
+    const query = `INSERT INTO eventos (nombre,lugar, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${nombre}','${lugar}', '${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}')`;
     return client
         .query(query)
         .then((res) => {
@@ -208,6 +206,37 @@ function actualizarAmbiente(
         });
 }
 
+function crearActividad(
+    response,
+    id_evento,
+    nombre,
+    startdate,
+    enddate,
+    starttime,
+    endtime,
+    descripcion,
+    expositor
+) {
+    const query = `INSERT INTO actividades (id_evento, nombre, fcomienzo, ffin, hcomienzo, hfin, descripcion, expositores) VALUES ('${id_evento}', '${nombre}','${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}'), 'ARRAY[${expositor}])`;
+    console.log(query);
+
+    return client
+        .query(query)
+        .then((res) => {
+            var payload = res || new Object();
+            var rows = JSON.stringify(payload.rows);
+            console.log(
+                "La actividad se ha insertado correctamente en la tabla."
+            );
+            console.log(rows);
+            return true;
+        })
+        .catch((error) => {
+            console.error("Error al insertar una actividad:", error);
+            return false;
+        });
+}
+
 function seleccionarComites(response) {
     const query = `SELECT * FROM comites`;
     console.log(query);
@@ -267,7 +296,6 @@ function NombresEventos(response) {
             );
             response.setHeader("Access-Control-Allow-Methods", "GET, POST");
             response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
             response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.writeHead(200);
@@ -332,7 +360,6 @@ const server = http.createServer((request, response) => {
                     response,
                     params.nombre,
                     params.lugar,
-                    params.categoria,
                     params.startdate,
                     params.enddate,
                     params.starttime,
@@ -340,6 +367,7 @@ const server = http.createServer((request, response) => {
                     params.descripcion
                 );
             });
+            break;
         case "/crearAmbiente":
             var body = "";
             request.on("data", function (chunk) {
@@ -348,7 +376,15 @@ const server = http.createServer((request, response) => {
             request.on("end", function () {
                 let params = JSON.parse(body);
                 console.log(params);
-                crearAmbiente(response, params);
+                crearAmbiente(
+                    response,
+                    params.nombre,
+                    params.ubicacion,
+                    params.aforo,
+                    params.tamaño,
+                    params.tipo,
+                    params.descripcion
+                );
             });
             break;
         case "/SeleccionarComites":
@@ -359,12 +395,6 @@ const server = http.createServer((request, response) => {
             request.on("end", function () {
                 seleccionarComites(response);
             });
-            break;
-        case "/seleccionarAmbientes":
-            NombresAmbientes(response);
-            break;
-        case "/eventosEnProgreso":
-            NombresEventos(response);
             break;
     }
 });
