@@ -151,7 +151,7 @@ function editarEvento(
 ) {
     const query = `
     UPDATE eventos
-    SET lugar='${lugar}', categoria='${categoria}', fcomienzo='${startdate}', ffin='${enddate}', hcomienzo='${starttime}', hfin='${endtime}', descripcion='${descripcion}'
+    SET lugar='${lugar}', fcomienzo='${startdate}', ffin='${enddate}', hcomienzo='${starttime}', hfin='${endtime}', descripcion='${descripcion}'
     WHERE nombre='${nombre}'
   `;
     console.log(query);
@@ -173,7 +173,7 @@ function editarEvento(
         });
 }
 
-function actualizarAmbiente(
+function editarAmbiente(
     response,
     nombre,
     ubicacion,
@@ -417,7 +417,6 @@ const server = http.createServer((request, response) => {
                     response,
                     params.nombre,
                     params.lugar,
-                    params.categoria,
                     params.startdate,
                     params.enddate,
                     params.starttime,
