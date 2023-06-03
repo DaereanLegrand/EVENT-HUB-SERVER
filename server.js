@@ -252,63 +252,80 @@ function seleccionarComites(response) {
     });
 }
 
-function NombresAmbientes(response) {
-    const query = "SELECT * FROM ambientes";
+function seleccionarAmbientes(response) {
+  const query = "SELECT * FROM ambientes";
 
-    client
-        .query(query)
-        .then((res) => {
-            var payload = res || new Object();
-            var rows = JSON.stringify(payload.rows);
-            response.setHeader(
-                "Access-Control-Allow-Origin",
-                "http://localhost:3000"
-            );
-            response.setHeader("Access-Control-Allow-Methods", "GET, POST");
-            response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      response.setHeader(
+        "Access-Control-Allow-Origin",
+        "http://localhost:3000"
+      );
+      response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+      response.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-            response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.writeHead(200);
-            response.end(rows);
-        })
-        .catch((error) => {
-            console.error("Error al obtener los ambientes:", error);
-            response.writeHead(500);
-            response.end(
-                JSON.stringify({ error: "Error al obtener los ambientes" })
-            );
-        });
+      response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
+      response.setHeader("Access-Control-Allow-Origin", "*");
+      response.writeHead(200);
+      response.end(rows);
+    })
+    .catch((error) => {
+      console.error("Error al obtener los ambientes:", error);
+      response.writeHead(500);
+      response.end(JSON.stringify({ error: "Error al obtener los ambientes" }));
+    });
 }
 
-function NombresEventos(response) {
-    const query = "SELECT * FROM eventos";
-    //console.log(query);
 
-    client
-        .query(query)
-        .then((res) => {
-            var payload = res || new Object();
-            var rows = JSON.stringify(payload.rows);
-            response.setHeader(
-                "Access-Control-Allow-Origin",
-                "http://localhost:3000"
-            );
-            response.setHeader("Access-Control-Allow-Methods", "GET, POST");
-            response.setHeader("Access-Control-Allow-Headers", "Content-Type");
-            response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            response.writeHead(200);
-            response.end(rows);
-        })
-        .catch((error) => {
-            console.error("Error al obtener los ambientes:", error);
-            response.writeHead(500);
-            response.end(
-                JSON.stringify({ error: "Error al obtener los eventos" })
-            );
-        });
+function seleccionarEventos(response) {
+  const query = "SELECT * FROM eventos";
+  //console.log(query);
+
+  client
+  .query(query)
+  .then((res) => {
+    var payload = res || new Object();
+    var rows = JSON.stringify(payload.rows);
+    response.setHeader(
+      "Access-Control-Allow-Origin",
+      "http://localhost:3000"
+    );
+    response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+    response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
+    response.setHeader("Access-Control-Allow-Origin", "*");
+    response.writeHead(200);
+    response.end(rows);
+  })
+  .catch((error) => {
+    console.error("Error al obtener los ambientes:", error);
+    response.writeHead(500);
+    response.end(JSON.stringify({ error: "Error al obtener los eventos" }));
+  });
 }
+
+function eliminarEvento(id_evento) {
+  const query = `DELETE FROM eventos WHERE id_evento = ${id_evento}`;
+  
+  console.log(query);
+
+  return client
+    .query(query);
+}
+
+function eliminarAmbiente(id_ambiente) {
+  const query = `DELETE FROM ambientes WHERE id_ambiente = ${id_ambiente}`;
+  
+  console.log(query);
+
+  return client
+    .query(query);
+}
+
 
 const server = http.createServer((request, response) => {
     switch (request.url) {
