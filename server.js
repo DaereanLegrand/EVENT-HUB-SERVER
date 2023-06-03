@@ -225,14 +225,18 @@ function crearActividad(
         .then((res) => {
             var payload = res || new Object();
             var rows = JSON.stringify(payload.rows);
-            console.log(
-                "La actividad se ha insertado correctamente en la tabla."
-            );
+            console.log("La actividad se ha insertado correctamente en la tabla.");
             console.log(rows);
+            response.setHeader("Content-type", "application/json");
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.writeHead(200);
+            var data = JSON.stringify(payload.rows[0]);
+            console.log(`response: ${data}`);
+            response.end(data);
             return true;
         })
         .catch((error) => {
-            console.error("Error al insertar una actividad:", error);
+            console.error("Error al insertar la actividad:", error);
             return false;
         });
 }
@@ -483,6 +487,27 @@ const server = http.createServer((request, response) => {
                 eliminarAmbiente(params.id);
             });
             break;
+        case "/Actividades":
+          var body = "";
+          request.on("data", function (chunk) {
+              body += chunk;
+          });
+          request.on("end", function () {
+              let params = JSON.parse(body);
+              console.log(params);
+              crearAmbiente(
+                params.response,
+                params.id_evento,
+                params.nombre,
+                params.startdate,
+                params.enddate,
+                params.starttime,
+                params.endtime,
+                params.descripcion,
+                params.expositor
+              );
+          });
+          break;
     }
 });
 
