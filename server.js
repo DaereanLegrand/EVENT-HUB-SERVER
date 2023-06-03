@@ -426,7 +426,7 @@ const server = http.createServer((request, response) => {
                   );
                 });
                 break;
-                
+    
             case "/editarAmbiente":
               var body = "";
               request.on("data", function (chunk) {
