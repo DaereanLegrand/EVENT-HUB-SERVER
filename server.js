@@ -396,6 +396,34 @@ const server = http.createServer((request, response) => {
                 seleccionarComites(response);
             });
             break;
+        case "/seleccionarAmbientes":
+            seleccionarAmbientes(response);
+            break;
+        case "/eventosEnProgreso":
+            seleccionarEventos(response);
+            break;
+        case "/EliminarEvento":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                console.log(params);
+                eliminarEvento(params.id);
+            });
+            break;
+        case "/EliminarAmbiente":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                console.log(params);
+                eliminarAmbiente(params.id);
+            });
+            break;
     }
 });
 
