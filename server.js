@@ -179,7 +179,34 @@ function editarAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo, descr
     });
 }
 
+function crearActividad(
+  response,
+  id_evento,
+  nombre,
+  startdate,
+  enddate,
+  starttime,
+  endtime,
+  descripcion,
+  expositor
+){
+  const query = `INSERT INTO actividades (id_evento, nombre, fcomienzo, ffin, hcomienzo, hfin, descripcion, expositores) VALUES ('${id_evento}', '${nombre}','${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}'), 'ARRAY[${expositor}])`;
+  console.log(query);
 
+  return client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      console.log("La actividad se ha insertado correctamente en la tabla.");
+      console.log(rows);
+      return true;
+    })
+    .catch((error) => {
+      console.error("Error al insertar una actividad:", error);
+      return false;
+    });
+}
 
 function seleccionarComites(response) {
   const query = `SELECT * FROM comites`;
@@ -358,6 +385,27 @@ const server = http.createServer((request, response) => {
           params.tamaño,
           params.tipo,
           params.descripcion
+        );
+      });
+      break;
+    case "/Actividades":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        crearActividad(
+          response,
+          params.id_evento,
+          params.nombre,
+          params.startdate,
+          params.enddate,
+          params.starttime,
+          params.endtime,
+          params.descripcion,
+          params.expositor
         );
       });
       break;
