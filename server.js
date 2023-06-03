@@ -355,7 +355,7 @@ const server = http.createServer((request, response) => {
       request.on("end", function () {
         let params = JSON.parse(body);
         console.log(params);
-        actualizarEvento(
+        editarEvento(
           response,
           params.nombre,
           params.lugar,
@@ -377,7 +377,7 @@ const server = http.createServer((request, response) => {
       request.on("end", function () {
         let params = JSON.parse(body);
         console.log(params);
-        actualizarAmbiente(
+        editarAmbiente(
           response,
           params.nombre,
           params.ubicacion,
