@@ -113,14 +113,9 @@ function crearEvento(
 
 function crearAmbiente(
   response,
-  nombre,
-  ubicacion,
-  aforo,
-  tamaño,
-  tipo,
-  descripcion
+  params
 ) {
-  const query = `INSERT INTO eventos (nombre, categoria, lugar, fcomienzo, ffin, hcomienzo, hfin, descripcion) VALUES ('${nombre}','${lugar}', '${direccion}', '${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}')`;
+    const query = `INSERT INTO ambientes (nombre, ubicacion, aforo, tipo, tamaño, descripcion) VALUES ('${params.nombre}', '${params.ubicacion}', ${params.aforo}, '${params.tipo}', ${params.tamaño}, '${params.descripcion}')`;
   console.log(query);
 
   return client
@@ -314,12 +309,7 @@ const server = http.createServer((request, response) => {
         console.log(params);
         crearAmbiente(
           response,
-          params.nombre,
-          params.ubicacion,
-          params.aforo,
-          params.tamaño,
-          params.tipo,
-          params.descripcion
+          params
         );
       });
       break;
