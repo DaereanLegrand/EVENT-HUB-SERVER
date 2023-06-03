@@ -157,7 +157,7 @@ function editarEvento(response, nombre, lugar, categoria, startdate, enddate, st
 }
 
 
-function actualizarAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo, descripcion) {
+function editarAmbiente(response, nombre, ubicacion, aforo, tamaño, tipo, descripcion) {
   const query = `
     UPDATE ambientes
     SET ubicacion='${ubicacion}', aforo=${aforo}, tamaño='${tamaño}', tipo='${tipo}', descripcion='${descripcion}'
@@ -319,6 +319,49 @@ const server = http.createServer((request, response) => {
         );
       });
       break;
+      
+    case "/editarEvento":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        actualizarEvento(
+          response,
+          params.nombre,
+          params.lugar,
+          params.categoria,
+          params.startdate,
+          params.enddate,
+          params.starttime,
+          params.endtime,
+          params.descripcion
+        );
+      });
+      break;
+      
+    case "/editarAmbiente":
+      var body = "";
+      request.on("data", function (chunk) {
+        body += chunk;
+      });
+      request.on("end", function () {
+        let params = JSON.parse(body);
+        console.log(params);
+        actualizarAmbiente(
+          response,
+          params.nombre,
+          params.ubicacion,
+          params.aforo,
+          params.tamaño,
+          params.tipo,
+          params.descripcion
+        );
+      });
+      break;
+
     case "/SeleccionarComites":
       var body = "";
       request.on("data", function (chunk) {
