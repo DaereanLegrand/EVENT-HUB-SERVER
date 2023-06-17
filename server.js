@@ -283,6 +283,40 @@ function seleccionarAmbientes(response) {
     });
 }
 
+function seleccionarEventosUsuario(response) {                         
+  const query = "SELECT * FROM eventos";
+                                   
+  client.query(query)              
+      .then((res) => {             
+        var payload = res || new Object();
+        var rows = payload.rows;   
+        response.setHeader("Access-Control-Allow-Origin",
+                           "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST")
+;
+        response.setHeader("Access-Control-Allow-Headers", "Content-Typ
+e");
+                                   
+        response.setHeader("Content-Type", "application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.writeHead(200);   
+                                   
+        // Modificar la respuesta para incluir solo los campos necesari
+os
+        const eventos = rows.map(row => {
+          const {id_evento, nombre, descripcion, imagen} = row;
+          return {id_evento, nombre, descripcion, imagen};
+        });                        
+                                   
+        response.end(JSON.stringify(eventos));
+      })                           
+      .catch((error) => {          
+        console.error("Error al obtener los eventos:", error);
+        response.writeHead(500);   
+        response.end(JSON.stringify({error : "Error al obtener los even
+tos"}));
+      });                          
+}                                  
 
 function seleccionarEventos(response) {
   const query = "SELECT * FROM eventos";
@@ -311,6 +345,38 @@ function seleccionarEventos(response) {
     response.end(JSON.stringify({ error: "Error al obtener los eventos" }));
   });
 }
+
+function paquetesPorEvento(response, evento) {
+  const query = `SELECT * FROM paquete where id_evento = '${evento}'`;
+  console.log(query);              
+                                   
+  client.query(query)              
+      .then((res) => {             
+        var payload = res || new Object();
+        var rows = JSON.stringify(payload.rows);
+        response.setHeader("Access-Control-Allow-Origin",
+                           "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST")
+;
+        response.setHeader("Access-Control-Allow-Headers", "Content-Typ
+e");
+                                   
+        response.setHeader("Content-Type",
+                           "application/json"); // Agrega este encabeza
+do
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.writeHead(200);   
+        response.end(rows);        
+      })                           
+      .catch((error) => {          
+        console.error("Error al obtener los ambientes:", error);
+        response.writeHead(500);   
+        response.end(JSON.stringify({error : "Error al obtener los even
+tos"}));
+      });                          
+}                                  
+
+
 
 function eliminarEvento(id_evento) {
   const query = `DELETE FROM eventos WHERE id_evento = ${id_evento}`;
@@ -465,6 +531,9 @@ const server = http.createServer((request, response) => {
         case "/eventosEnProgreso":
             seleccionarEventos(response);
             break;
+        case "/seleccionarEventos":
+            seleccionarEventosUsuario(response);
+            break;
         case "/EliminarEvento":
             var body = "";
             request.on("data", function (chunk) {
@@ -508,6 +577,46 @@ const server = http.createServer((request, response) => {
               );
           });
           break;
+      case "/Preinscribir":
+        console.log("Preinscribir")
+        var body = "";
+        request.on("data", function(chunk) { body += chunk; });
+        request.on("end", function() {
+        let params = JSON.parse(body);
+        console.log(params);
+        crearPreInscrito(response, params.nombre, params.apellido,
+                       params.tipodocumento, params.numerodocumento,
+                       params.evento, params.paquete, params.correoelectronico);
+          });
+         break;
+      case "/paquetesPorEvento":
+        console.log("paquetesPorEvento")
+        var body = "";
+        request.on("data", function(chunk) { body += chunk; });
+        request.on("end", function() {
+        console.log("test1");
+        console.log(body);
+        console.log("test2");
+        if (body == "") {
+          console.log("preflight")
+          var rows = JSON.stringify({});
+          response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+          response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+          response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+          response.setHeader("Content-Type","application/json"); // Agrega este encabezado
+          response.setHeader("Access-Control-Allow-Origin", "*");
+          response.writeHead(200);
+          response.end(rows);
+        } else {
+          var jsonbody = JSON.parse(body);
+          // var jsonbody = JSON.parse(JSON.stringify(body));
+          console.log(jsonbody.evento);
+          // console.log(params);
+          paquetesPorEvento(response, jsonbody.evento);
+          // paquetesPorEvento(response, 1);
+        }
+        });
+        break;
     }
 });
 
