@@ -118,7 +118,7 @@ function crearEvento(
 }
 
 function crearAmbiente(response, params) {
-    const query = `INSERT INTO ambientes (nombre, ubicacion, aforo, tipo, tamaño, descripcion) VALUES ('${params.nombre}', '${params.ubicacion}', ${params.aforo}, '${params.tipo}', ${params.tamaño}, '${params.descripcion}')`;
+    const query = `INSERT INTO ambientes (id_evento ,nombre, ubicacion, aforo, tipo, tamaño, descripcion) VALUES ('${params.id_evento}', '${params.nombre}', '${params.ubicacion}', ${params.aforo}, '${params.tipo}', ${params.tamaño}, '${params.descripcion}')`;
     console.log(query);
 
     return client
@@ -140,9 +140,9 @@ function crearAmbiente(response, params) {
 
 function editarEvento(
     response,
+    id_evento,
     nombre,
     lugar,
-    categoria,
     startdate,
     enddate,
     starttime,
@@ -151,8 +151,8 @@ function editarEvento(
 ) {
     const query = `
     UPDATE eventos
-    SET lugar='${lugar}', fcomienzo='${startdate}', ffin='${enddate}', hcomienzo='${starttime}', hfin='${endtime}', descripcion='${descripcion}'
-    WHERE nombre='${nombre}'
+    SET nombre= '${nombre}', lugar='${lugar}', fcomienzo='${startdate}', ffin='${enddate}', hcomienzo='${starttime}', hfin='${endtime}', descripcion='${descripcion}'
+    WHERE id_evento='${id_evento}'
   `;
     console.log(query);
 
@@ -218,6 +218,7 @@ function crearActividad(
     expositor
 ) {
     const query = `INSERT INTO actividades (id_evento, nombre, fcomienzo, ffin, hcomienzo, hfin, descripcion, expositores) VALUES ('${id_evento}', '${nombre}','${startdate}','${enddate}', '${starttime}', '${endtime}', '${descripcion}'), 'ARRAY[${expositor}])`;
+    console.log("asdasdafopinewagf ->");
     console.log(query);
 
     return client
@@ -408,6 +409,7 @@ function eliminarActividad(id_actividad) {
 function VisualizarAmbiente(response, id_evento){
     //console.log(`AHSJDAHSDJASHDASJDHASD -> ${id_evento}`);
     const query = `SELECT * FROM ambientes where id_evento = ${id_evento}`;
+    
     console.log(query);
   
     client
@@ -436,7 +438,12 @@ function VisualizarAmbiente(response, id_evento){
 
 function VisualizarActividades(response, id_evento){
     //console.log(`AHSJDAHSDJASHDASJDHASD -> ${id_evento}`);
-    const query = `SELECT * FROM actividades`;
+    //const query = `SELECT * FROM actividades`;
+
+    const query = `SELECT act.*
+    FROM actividades act
+    JOIN ambientes amb ON act.id_ambientes = amb.id_ambiente
+    WHERE amb.id_evento = ${id_evento};`
     console.log(query);
   
     client
@@ -461,6 +468,38 @@ function VisualizarActividades(response, id_evento){
       response.writeHead(500);
       response.end(JSON.stringify({ error: "Error al obtener los Ambientes" }));
     });
+}
+
+function crearPreInscrito(response, nombre, apellido, tipodocumento,
+    numerodocumento, evento, paquete, correoelectronico) {
+const query = `WITH nuevo_usuario AS (
+INSERT INTO usuarios (nombre, apellido, tipo_documento, numero_documento, evento, paquete, correo_electronico)
+VALUES ('${nombre}', '${apellido}', '${tipodocumento}', '${
+numerodocumento}', '${evento}', '${paquete}', '${correoelectronico}')
+RETURNING id_usuario
+)
+INSERT INTO preinscritos (id_usuario)
+SELECT id_usuario FROM nuevo_usuario
+RETURNING id_usuario;`;
+return client.query(query)
+.then((res) => {
+var payload = res || new Object();
+var rows = JSON.stringify(payload.rows);
+console.log(
+"El preinscrito se ha insertado correctamente en la tabla.");
+console.log(rows);
+response.setHeader("Content-type", "application/json");
+response.setHeader("Access-Control-Allow-Origin", "*");
+response.writeHead(200);
+var data = JSON.stringify(payload.rows[0]);
+console.log(`response: ${data}`);
+response.end(data);
+return true;
+})
+.catch((error) => {
+console.error("Error al insertar un evento:", error);
+return false;
+});
 }
 
 const server = http.createServer((request, response) => {
@@ -529,15 +568,7 @@ const server = http.createServer((request, response) => {
             request.on("end", function () {
                 let params = JSON.parse(body);
                 console.log(params);
-                crearAmbiente(
-                    response,
-                    params.nombre,
-                    params.ubicacion,
-                    params.aforo,
-                    params.tamaño,
-                    params.tipo,
-                    params.descripcion
-                );
+                crearAmbiente(response, params);
             });
             break;
 
@@ -551,6 +582,7 @@ const server = http.createServer((request, response) => {
                   console.log(params);
                   editarEvento(
                     response,
+                    params.id_evento,
                     params.nombre,
                     params.lugar,
                     params.startdate,
@@ -623,6 +655,7 @@ const server = http.createServer((request, response) => {
             });
             break;
         case "/Actividades":
+            console.log("BACKEND SISIDJASIDJAIS");
           var body = "";
           request.on("data", function (chunk) {
               body += chunk;
@@ -630,7 +663,7 @@ const server = http.createServer((request, response) => {
           request.on("end", function () {
               let params = JSON.parse(body);
               console.log(params);
-              crearAmbiente(
+              crearActividad(
                 params.response,
                 params.id_evento,
                 params.nombre,
