@@ -322,6 +322,7 @@ function eliminarEvento(id_evento) {
 }
 
 function eliminarAmbiente(id_ambiente) {
+    
   const query = `DELETE FROM ambientes WHERE id_ambiente = ${id_ambiente}`;
   
   console.log(query);
@@ -330,6 +331,76 @@ function eliminarAmbiente(id_ambiente) {
     .query(query);
 }
 
+function eliminarActividad(id_actividad) {
+    
+    console.log("asdasdasdasd32qj20df9j320df");
+    console.log(id_actividad);
+    const query = `DELETE FROM actividades WHERE id_actividad = ${id_actividad}`;
+    
+    console.log(query);
+  
+    return client
+      .query(query);
+  }
+  
+
+function VisualizarAmbiente(response, id_evento){
+    //console.log(`AHSJDAHSDJASHDASJDHASD -> ${id_evento}`);
+    const query = `SELECT * FROM ambientes where id_evento = ${id_evento}`;
+    console.log(query);
+  
+    client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      response.setHeader(
+        "Access-Control-Allow-Origin",
+        "http://localhost:3000"
+      );
+      response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+      response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  
+      response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
+      response.setHeader("Access-Control-Allow-Origin", "*");
+      response.writeHead(200);
+      response.end(rows);
+    })
+    .catch((error) => {
+      console.error("Error al obtener los ambientes:", error);
+      response.writeHead(500);
+      response.end(JSON.stringify({ error: "Error al obtener los Ambientes" }));
+    });
+}
+
+function VisualizarActividades(response, id_evento){
+    //console.log(`AHSJDAHSDJASHDASJDHASD -> ${id_evento}`);
+    const query = `SELECT * FROM actividades`;
+    console.log(query);
+  
+    client
+    .query(query)
+    .then((res) => {
+      var payload = res || new Object();
+      var rows = JSON.stringify(payload.rows);
+      response.setHeader(
+        "Access-Control-Allow-Origin",
+        "http://localhost:3000"
+      );
+      response.setHeader("Access-Control-Allow-Methods", "GET, POST");
+      response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  
+      response.setHeader("Content-Type", "application/json"); // Agrega este encabezado
+      response.setHeader("Access-Control-Allow-Origin", "*");
+      response.writeHead(200);
+      response.end(rows);
+    })
+    .catch((error) => {
+      console.error("Error al obtener los ambientes:", error);
+      response.writeHead(500);
+      response.end(JSON.stringify({ error: "Error al obtener los Ambientes" }));
+    });
+}
 
 const server = http.createServer((request, response) => {
     switch (request.url) {
@@ -508,6 +579,40 @@ const server = http.createServer((request, response) => {
               );
           });
           break;
+          case "/VisualizarAmbientes":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                //console.log(params);
+                VisualizarAmbiente(response,params.id_evento);
+            });
+            break;
+            case "/VisualizarActividades":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                //console.log(params);
+                VisualizarActividades(response,params.id_evento);
+            });
+            break;
+
+            case "/EliminarActividad":
+            var body = "";
+            request.on("data", function (chunk) {
+                body += chunk;
+            });
+            request.on("end", function () {
+                let params = JSON.parse(body);
+                console.log(params);
+                eliminarActividad(params.id);
+            });
+            break;
     }
 });
 
