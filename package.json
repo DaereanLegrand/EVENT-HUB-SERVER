@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/DaereanLegrand/EVENT-HUB-SERVER#readme",
   "dependencies": {
-    "pg": "^8.11.0"
+    "pg": "^8.11.1"
   }
 }
